@@ -1,0 +1,16 @@
+services:
+  emqx:
+    image: emqx/emqx:5.8.4
+    container_name: emqx
+    restart: always
+    ports:
+      - 1883:1883
+      - 8883:8883
+      - 8083:8083
+      - 8084:8084
+      - 18083:18083
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+	  - ./emqx/data:/opt/emqx/data
+      - ./emqx/etc:/opt/emqx/etc # 挂载配置文件目录，可按需修改路径
+      - ./emqx/log:/opt/emqx/log # 挂载日志文件目录，可按需修改路径

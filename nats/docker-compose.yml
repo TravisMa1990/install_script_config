@@ -1,0 +1,12 @@
+services:
+  nats:
+    image: nats:2.6.3
+    container_name: nats
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+      - "6222:6222"
+    volumes:
+      - ./nats-data:/nats-data
+    environment:
+      - NATS_SERVER_ARGS=-p 4222 -m 8222 --http_port=8222 --cluster=6222
