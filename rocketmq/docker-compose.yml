@@ -1,0 +1,25 @@
+services:
+  rocketmq-namesrv:
+    image: apache/rocketmq:4.9.3
+    container_name: rocketmq-namesrv
+    ports:
+      - "9876:9876"
+    command: ["sh", "-c", "nohup sh mqnamesrv & tail -f /dev/null"]
+    volumes:
+      - ./data/namesrv/logs:/home/rocketmq/logs
+      - ./data/namesrv/store:/home/rocketmq/store
+
+  rocketmq-broker:
+    image: apache/rocketmq:4.9.3
+    container_name: rocketmq-broker
+    ports:
+      - "10911:10911"
+      - "10909:10909"
+    environment:
+      - NAMESRV_ADDR=rocketmq-namesrv:9876
+    command: ["sh", "-c", "nohup sh mqbroker -n rocketmq-namesrv:9876 & tail -f /dev/null"]
+    depends_on:
+      - rocketmq-namesrv
+    volumes:
+      - ./data/broker/logs:/home/rocketmq/logs
+      - ./data/broker/store:/home/rocketmq/store
