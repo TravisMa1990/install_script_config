@@ -1,0 +1,8 @@
+{
+	"model_dir": "/home/ollama",
+	"registry": {
+		"mirrors": {
+			"registry.ollama.ai": "https://registry.ollama.ai"
+		}
+	}
+}

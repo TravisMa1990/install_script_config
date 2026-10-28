@@ -1,0 +1,16 @@
+{
+  "name": "mysql-user-sink",
+  "config": {
+    "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+    "tasks.max": "1",
+    "topics": "pg-demo.public.user_info",
+    "connection.url": "jdbc:mysql://yourIP:3306/demo1?useSSL=false&allowPublicKeyRetrieval=true",
+    "connection.user": "root",
+    "connection.password": "yourPassword",
+    "insert.mode": "upsert",
+    "pk.mode": "record_key",
+    "pk.fields": "user_id",
+    "auto.create": "false",
+    "auto.evolve": "false"
+  }
+}

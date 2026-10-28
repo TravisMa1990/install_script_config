@@ -1,0 +1,14 @@
+services:
+  dm8_01:
+    image: dm8_single:dm8_20230808_rev197096_x86_rh6_64
+    container_name: dm8_01
+    restart: always
+    privileged: true
+    ports:
+      - "5236:5236"
+    environment:
+      - PAGE_SIZE=16
+      - LD_LIBRARY_PATH=/opt/dmdbms/bin
+      - INSTANCE_NAME=dm8_01
+    volumes:
+      - ./dmdata:/opt/dmdbms/data

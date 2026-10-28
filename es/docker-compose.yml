@@ -1,0 +1,41 @@
+
+networks:
+  es:
+    driver: bridge
+
+services:
+  elasticsearch:
+    image: elasticsearch:7.17.1
+    container_name: elasticsearch
+    restart: always
+    volumes:
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ./elasticsearch/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - ./elasticsearch/plugins:/usr/share/elasticsearch/plugins
+    environment:
+      TZ: Asia/Shanghai
+      LANG: en_US.UTF-8
+      discovery.type: single-node
+      ES_JAVA_OPTS: "-Xmx2G -Xms1G"
+      ELASTIC_PASSWORD: "yourPassword"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    networks:
+      - es
+
+  kibana:
+    image: kibana:7.17.1
+    container_name: kibana
+    restart: always
+    volumes:
+      - ./elasticsearch/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    networks:
+      - es

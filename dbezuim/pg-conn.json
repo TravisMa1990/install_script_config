@@ -1,0 +1,16 @@
+{
+  "name": "pg-user-connector",
+  "config": {
+    "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+    "database.hostname": "yourIP",
+    "database.port": "5432",
+    "database.user": "postgres",
+    "database.password": "yourPassword",
+    "database.dbname": "demo",
+    "database.server.name": "pg-demo",
+    "plugin.name": "pgoutput",
+    "slot.name": "debezium_slot",
+    "publication.name": "dbz_pub",
+    "table.include.list": "public.user_info"
+  }
+}

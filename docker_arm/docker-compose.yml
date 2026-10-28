@@ -1,0 +1,15 @@
+services:
+  arm_python:
+    #image: python:3.10.11-slim-buster-linuxarm64
+    image: arm64v8/python:3.10-slim
+    container_name: arm_python
+    platform: linux/arm64 
+    network_mode: bridge
+    volumes:
+      - ./downloads:/app
+      - /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static
+      - ./requirements.txt:/requirements.txt
+    #entrypoint: ["/usr/bin/qemu-aarch64-static", "/bin/sh", "-c"]
+    command: ["tail", "-f", "/dev/null"]
+    environment:
+      - PYTHONUNBUFFERED=1

@@ -14,7 +14,7 @@ services:
 #      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=testtoken
     volumes:
       - ./data/influxdb:/var/lib/influxdb2
-	  
+      
 #  grafana:
 #    image: grafana/grafana:latest
 #    container_name: grafana

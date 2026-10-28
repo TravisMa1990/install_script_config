@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: postgres:15.5
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourPassword
+      POSTGRES_DB: demo
+    volumes:
+      - ./pg-init:/docker-entrypoint-initdb.d
+    command: >
+      postgres
+      -c wal_level=logical
+      -c max_replication_slots=10
+      -c max_wal_senders=10
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0   # 对应 Kafka 3.5（已含 KRaft）
+    container_name: kafka-kraft
+    privileged: true
+    user: "0:0"
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      # KRaft 关键变量
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://yourIP:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+#      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk   # 任意 16 字节 base64
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+#    volumes:
+#      - kraft-logs:/tmp/kraft-combined-logs
+#      - ./kraft-data:/var/lib/kafka/data
+    depends_on: [postgres]
+
+  connect:
+    image: quay.io/debezium/connect:2.7
+    container_name: connect-kraft
+    ports:
+      - "8083:8083"
+    environment:
+      BOOTSTRAP_SERVERS: kafka:9092
+      GROUP_ID: 1
+      CONFIG_STORAGE_TOPIC: connect-configs
+      OFFSET_STORAGE_TOPIC: connect-offsets
+      STATUS_STORAGE_TOPIC: connect-status
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_TOPIC_CREATION_DEFAULT_REPLICATION_FACTOR: 1
+    depends_on: [kafka]

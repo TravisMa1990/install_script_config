@@ -1,0 +1,102 @@
+networks:
+  redis-cluster-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16
+
+services:
+  redis-node1:
+    image: redis:latest
+    container_name: redis-node1
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --bind 0.0.0.0 --protected-mode no
+    ports:
+      - "7380:6380"
+    volumes:
+      - ./redis/node1/data:/data
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.11
+    restart: always
+
+  redis-node2:
+    image: redis:latest
+    container_name: redis-node2
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --bind 0.0.0.0 --protected-mode no
+    ports:
+      - "7381:6380"
+    volumes:
+      - ./redis/node2/data:/data
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.12
+    restart: always
+
+  redis-node3:
+    image: redis:latest
+    container_name: redis-node3
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --bind 0.0.0.0 --protected-mode no
+    ports:
+      - "7382:6380"
+    volumes:
+      - ./redis/node3/data:/data
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.13
+    restart: always
+
+  redis-node4:
+    image: redis:latest
+    container_name: redis-node4
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --bind 0.0.0.0 --protected-mode no
+    ports:
+      - "7383:6380"
+    volumes:
+      - ./redis/node4/data:/data
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.14
+    restart: always
+
+  redis-node5:
+    image: redis:latest
+    container_name: redis-node5
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --bind 0.0.0.0 --protected-mode no
+    ports:
+      - "7384:6380"
+    volumes:
+      - ./redis/node5/data:/data
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.15
+    restart: always
+
+  redis-node6:
+    image: redis:latest
+    container_name: redis-node6
+    command: redis-server --port 6380 --cluster-enabled yes --cluster-config-file nodes.conf --cluster-node-timeout 5000 --appendonly yes --bind 0.0.0.0 --protected-mode no
+    ports:
+      - "7385:6380"
+    volumes:
+      - ./redis/node6/data:/data
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.16
+    restart: always
+
+  redis-cluster-init:
+    image: redis:latest
+    container_name: redis-cluster-init
+    depends_on:
+      - redis-node1
+      - redis-node2
+      - redis-node3
+      - redis-node4
+      - redis-node5
+      - redis-node6
+    networks:
+      redis-cluster-net:
+        ipv4_address: 172.30.0.100
+    command: >
+      sh -c "sleep 10 && echo 'yes' | redis-cli --cluster create 172.30.0.11:6380 172.30.0.12:6380 172.30.0.13:6380 172.30.0.14:6380 172.30.0.15:6380 172.30.0.16:6380 --cluster-replicas 1"
+    restart: "no"
